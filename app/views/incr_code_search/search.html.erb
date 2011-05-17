@@ -1,6 +1,5 @@
 
 <% @files.each do |file| %>
-<p><%= to_path_param(file) %></p>
 <p><%= link_to h(file), 
        {:controller => 'repositories', :action => 'entry', :id => @project, :path => to_path_param(URI.unescape(file)), :rev => @repository.default_branch} %>
 </p>
