@@ -1,5 +1,4 @@
 require 'redmine'
-require 'git_patch'
 
 Redmine::Plugin.register :redmine_incr_code_search do
   name 'Redmine Incr Code Search plugin'

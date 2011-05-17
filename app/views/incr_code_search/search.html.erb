@@ -1,6 +1,9 @@
-
-<% @files.each do |file| %>
-<p><%= link_to h(file), 
-       {:controller => 'repositories', :action => 'entry', :id => @project, :path => to_path_param(URI.unescape(file)), :rev => @repository.default_branch} %>
-</p>
+<% form_tag :action => 'search', :project_id => @project do %>
+  <%= text_field_tag :keyword, @keyword %>
 <% end %>
+
+<%= observe_field(:keyword, :frequency => 0.5, :update => :files, :url => { :action => :live_search, :project_id => @project }) %>
+
+<div id="files">
+<%= render :partial => 'files' %>
+</div>
