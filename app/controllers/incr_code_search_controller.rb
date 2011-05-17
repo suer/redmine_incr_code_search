@@ -4,13 +4,13 @@ class IncrCodeSearchController < ApplicationController
   def search
     @project = Project.find(params[:project_id])
     @repository = @project.repository
-    cmd = "| git --git-dir #{@repository.url} ls-files"
+    cmd = "| git --git-dir #{@repository.url} ls-tree -r HEAD:"
     @files = []
 
     @keyword = params[:keyword] || request.raw_post.split('&')[0]
     open(cmd) do |io|
       io.each_line do |line|
-        @files << line.chomp if @keyword.blank? or /#{@keyword}/i =~ line
+        @files << line.split(" ")[-1].chomp if @keyword.blank? or /#{@keyword}/i =~ line.split(" ")[-1]
       end     
     end
     respond_to do |format|
