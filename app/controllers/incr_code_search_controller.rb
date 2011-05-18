@@ -8,9 +8,15 @@ class IncrCodeSearchController < ApplicationController
     @files = []
 
     @keyword = params[:keyword] || request.raw_post.split('&')[0]
+    valid = true
+    begin
+      Regexp.new(@keyword) 
+    rescue RegexpError
+      valid = false
+    end
     open(cmd) do |io|
       io.each_line do |line|
-        @files << line.split(" ")[-1].chomp if @keyword.blank? or /#{@keyword}/i =~ line.split(" ")[-1]
+        @files << line.split(" ")[-1].chomp if @keyword.blank? or (valid and /#{@keyword}/i =~ line.split(" ")[-1])
       end     
     end
     respond_to do |format|
