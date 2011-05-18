@@ -8,7 +8,9 @@ Redmine::Plugin.register :redmine_incr_code_search do
   url 'https://github.com/codefirst/redmine_incr_code_search'
   author_url 'http://d.hatena.ne.jp/suer'
 
-  permission :hello, {:incr_code_search => [:search]}, :public => true
-  menu :project_menu, :incr_code_search, {:controller => 'incr_code_search', :action => 'search'},
-  :caption => :menu_caption, :param => :project_id
+  project_module :incr_code_search do
+    permission :incr_code_search, {:incr_code_search => [:search]}, :public => true
+    menu :project_menu, :incr_code_search, {:controller => 'incr_code_search', :action => 'search'},
+    :caption => :menu_caption, :param => :project_id
+  end
 end
