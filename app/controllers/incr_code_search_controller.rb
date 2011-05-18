@@ -10,7 +10,7 @@ class IncrCodeSearchController < ApplicationController
     @keyword = params[:keyword] || request.raw_post.split('&')[0]
     valid = true
     begin
-      Regexp.new(@keyword) 
+      Regexp.new(@keyword) unless @keyword.blank?
     rescue RegexpError
       valid = false
     end
