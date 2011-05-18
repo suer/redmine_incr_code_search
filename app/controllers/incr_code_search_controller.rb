@@ -3,6 +3,8 @@ class IncrCodeSearchController < ApplicationController
 
   def search
     @project = Project.find(params[:project_id])
+    return if @project.repository.nil? or @project.repository.scm.class != Redmine::Scm::Adapters::GitAdapter
+
     @repository = @project.repository
     cmd = "| git --git-dir #{@repository.url} ls-tree -r HEAD:"
     @files = []
