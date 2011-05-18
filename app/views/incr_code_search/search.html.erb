@@ -1,5 +1,5 @@
 <% form_tag :action => 'search', :project_id => @project do %>
-  <%= text_field_tag :keyword, @keyword %>
+    <%= text_field_tag :keyword, @keyword, {:autofocus=>true, :style=>'width: 300px'} %>
 <% end %>
 
 <%= observe_field(:keyword, :frequency => 0.5, :update => :files, :url => { :action => :live_search, :project_id => @project }) %>
