@@ -1,10 +1,9 @@
-<% if @project.repository.nil? or @project.repository.scm.class != Redmine::Scm::Adapters::GitAdapter %>
+<% unless @scm_supported %>
   <p> this project has no git repository </p>
 <% else %>
   <% form_tag :action => 'search', :project_id => @project do %>
     <%= text_field_tag :keyword, @keyword, {:autofocus=>true, :style=>'width: 300px'} %>
   <% end %>
-
 <div id="result"/>
 
 <script type="text/javascript">
@@ -16,7 +15,7 @@ function listFiles() {
   var html = '';
   for (var i = 0, len = files.length; i < len; i++) {
     if (files[i].match(regexp)) {
-      html += "<p><a href='<%= home_path %>projects/<%= params[:project_id] %>/repository/revisions/master/entry/" + files[i] + "'>" + files[i] + "</a></p>";
+      html += "<p><a href='" + "<%= url_for(:controller => 'repositories', :action => 'entry', :id => @project) %>/" +  files[i] + "'>" + files[i] + "</a></p>";
     }
   }
   $('result').update(html);

@@ -1,22 +1,42 @@
 class IncrCodeSearchController < ApplicationController
   unloadable
 
+  SUPPORT_SCMS = [ 
+    Redmine::Scm::Adapters::GitAdapter, 
+    Redmine::Scm::Adapters::SubversionAdapter
+  ]
+
+
   def search
     @project = Project.find(params[:project_id])
-    return if @project.repository.nil? or @project.repository.scm.class != Redmine::Scm::Adapters::GitAdapter
+    @scm_supported = scm_supported(@project)
+    return unless @scm_supported
     @keyword = params[:keyword] || request.raw_post.split('&')[0]
   end
 
   def files
     @project = Project.find(params[:project_id])
-    if @project.repository.nil? or @project.repository.scm.class != Redmine::Scm::Adapters::GitAdapter
-      render :json => []
+    unless scm_supported(@project)
+      render :json => '[]'
+      return
     end
     @files = []
-    open("| git --git-dir #{@project.repository.url} ls-tree -r --name-only HEAD:") do |io|
+    open("| #{cmd}") do |io|
       io.each_line {|line| @files << line.chomp }     
     end
     render :json => @files
   end
 
+  private 
+  def cmd
+    if @project.repository.scm.class == Redmine::Scm::Adapters::GitAdapter
+      "git --git-dir #{@project.repository.url}  ls-tree -r --name-only HEAD:"
+    elsif @project.repository.scm.class == Redmine::Scm::Adapters::SubversionAdapter
+      "svn ls -R #{@project.repository.url}"
+    end
+  end
+  
+  def scm_supported(project)
+    not project.repository.nil? and SUPPORT_SCMS.include?(@project.repository.scm.class)
+  end
 end
