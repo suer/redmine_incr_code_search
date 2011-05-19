@@ -4,31 +4,19 @@ class IncrCodeSearchController < ApplicationController
   def search
     @project = Project.find(params[:project_id])
     return if @project.repository.nil? or @project.repository.scm.class != Redmine::Scm::Adapters::GitAdapter
-
-    @repository = @project.repository
-    cmd = "| git --git-dir #{@repository.url} ls-tree -r HEAD:"
-    @files = []
-
     @keyword = params[:keyword] || request.raw_post.split('&')[0]
-    valid = true
-    begin
-      Regexp.new(@keyword) unless @keyword.blank?
-    rescue RegexpError
-      valid = false
-    end
-    open(cmd) do |io|
-      io.each_line do |line|
-        @files << line.split(" ")[-1].chomp if @keyword.blank? or (valid and /#{@keyword}/i =~ line.split(" ")[-1])
-      end     
-    end
-    respond_to do |format|
-      format.html { }
-      format.json { render :json => @files }
-    end
   end
 
-  def live_search
-    search
+  def files
+    @project = Project.find(params[:project_id])
+    if @project.repository.nil? or @project.repository.scm.class != Redmine::Scm::Adapters::GitAdapter
+      render :json => []
+    end
+    @files = []
+    open("| git --git-dir #{@project.repository.url} ls-tree -r --name-only HEAD:") do |io|
+      io.each_line {|line| @files << line.chomp }     
+    end
+    render :json => @files
   end
 
 end

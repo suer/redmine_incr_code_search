@@ -24,9 +24,10 @@ function listFiles() {
 
 Event.observe(window, "load", function() { 
   new Ajax.Request(
-    '<%= home_url %>incr_code_search/<%= params[:project_id] %>/search.json',
+    '<%= home_url %>incr_code_search/<%= params[:project_id] %>/files.json',
     {
       method: 'get',
+      parameters: "keyword=" + $('keyword').value,
       onComplete: function(req, json) { files = eval(req.responseText); listFiles()}
     });
 });
