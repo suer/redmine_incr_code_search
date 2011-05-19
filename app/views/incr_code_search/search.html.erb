@@ -8,30 +8,31 @@
 <div id="result"/>
 
 <script type="text/javascript">
+(function(document) {
+
 var files = null;
-function load() {
-  var list = new Ajax.Request(
+function listFiles() {
+  var regexp = new RegExp($('keyword').value, 'i');
+  var html = '';
+  for (var i = 0, len = files.length; i < len; i++) {
+    if (files[i].match(regexp)) {
+      html += "<p><a href='<%= home_path %>projects/<%= params[:project_id] %>/repository/revisions/master/entry/" + files[i] + "'>" + files[i] + "</a></p>";
+    }
+  }
+  $('result').update(html);
+}
+
+Event.observe(window, "load", function() { 
+  new Ajax.Request(
     '<%= home_url %>incr_code_search/<%= params[:project_id] %>/search.json',
     {
       method: 'get',
-      onComplete: complete
+      onComplete: function(req, json) { files = eval(req.responseText); listFiles()}
     });
-}
-function complete(req, json) {
-  files = eval(req.responseText);
-}
-
-Event.observe(window, "load", function() { load() });
-new Form.Element.Observer('keyword', 0.5, function(element, value) {
-  $('result').update("");
-  var regexp = new RegExp($('keyword').value, 'i');
-  var len = files.length;
-  for (var i = 0; i < len; i++) {
-    if (files[i].match(regexp)) {
-      $('result').insert("<p><a href='<%= home_path %>projects/<%= params[:project_id] %>/repository/revisions/master/entry/" + files[i] + "'>" + files[i] + "</a></p>");
-    }
-  }
 });
+new Form.Element.Observer('keyword', 0.5, listFiles);
+
+})(document);
 </script>  
 
 <% end %>
