@@ -1,5 +1,5 @@
 <% unless @scm_supported %>
-  <p> this project has no git repository </p>
+  <p> unsupported repository </p>
 <% else %>
   <% form_tag :action => 'search', :project_id => @project do %>
     <%= text_field_tag :keyword, @keyword, {:autofocus=>true, :style=>'width: 300px'} %>
