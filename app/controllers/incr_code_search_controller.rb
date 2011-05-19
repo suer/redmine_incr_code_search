@@ -25,7 +25,6 @@ class IncrCodeSearchController < ApplicationController
       format.html { }
       format.json { render :json => @files }
     end
-    render :layout => false if request.xhr?
   end
 
   def live_search

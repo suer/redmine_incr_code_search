@@ -4,9 +4,34 @@
   <% form_tag :action => 'search', :project_id => @project do %>
     <%= text_field_tag :keyword, @keyword, {:autofocus=>true, :style=>'width: 300px'} %>
   <% end %>
-  <%= observe_field(:keyword, :frequency => 0.5, :update => :files, :url => { :action => :live_search, :project_id => @project }) %>
 
-  <div id="files">
-    <%= render :partial => 'files' %>
-  </div>
+<div id="result"/>
+
+<script type="text/javascript">
+var files = null;
+function load() {
+  var list = new Ajax.Request(
+    '<%= home_url %>incr_code_search/<%= params[:project_id] %>/search.json',
+    {
+      method: 'get',
+      onComplete: complete
+    });
+}
+function complete(req, json) {
+  files = eval(req.responseText);
+}
+
+Event.observe(window, "load", function() { load() });
+new Form.Element.Observer('keyword', 0.5, function(element, value) {
+  $('result').update("");
+  var regexp = new RegExp($('keyword').value, 'i');
+  var len = files.length;
+  for (var i = 0; i < len; i++) {
+    if (files[i].match(regexp)) {
+      $('result').insert("<p><a href='<%= home_path %>projects/<%= params[:project_id] %>/repository/revisions/master/entry/" + files[i] + "'>" + files[i] + "</a></p>");
+    }
+  }
+});
+</script>  
+
 <% end %>
