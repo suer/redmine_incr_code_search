@@ -31,11 +31,12 @@ class IncrCodeSearchController < ApplicationController
 
   private 
   def cmd
-    if @project.repository.scm.class == Redmine::Scm::Adapters::GitAdapter
+    case @project.repository.scm
+    when Redmine::Scm::Adapters::GitAdapter
       "git --git-dir #{@project.repository.url}  ls-tree -r --name-only HEAD:"
-    elsif @project.repository.scm.class == Redmine::Scm::Adapters::SubversionAdapter
+    when Redmine::Scm::Adapters::SubversionAdapter
       "svn ls -R #{@project.repository.url}"
-    elsif @project.repository.scm.class == Redmine::Scm::Adapters::MercurialAdapter
+    when Redmine::Scm::Adapters::MercurialAdapter
       "hg locate -R #{@project.repository.url}"
     end
   end
