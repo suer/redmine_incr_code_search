@@ -3,11 +3,13 @@ class IncrCodeSearchController < ApplicationController
 
   SUPPORT_SCMS = [ 
     Redmine::Scm::Adapters::GitAdapter, 
-    Redmine::Scm::Adapters::SubversionAdapter
+    Redmine::Scm::Adapters::SubversionAdapter,
+    Redmine::Scm::Adapters::MercurialAdapter
   ]
 
 
   def search
+
     @project = Project.find(params[:project_id])
     @scm_supported = scm_supported(@project)
     return unless @scm_supported
@@ -33,6 +35,8 @@ class IncrCodeSearchController < ApplicationController
       "git --git-dir #{@project.repository.url}  ls-tree -r --name-only HEAD:"
     elsif @project.repository.scm.class == Redmine::Scm::Adapters::SubversionAdapter
       "svn ls -R #{@project.repository.url}"
+    elsif @project.repository.scm.class == Redmine::Scm::Adapters::MercurialAdapter
+      "hg locate -R #{@project.repository.url}"
     end
   end
   
