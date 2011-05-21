@@ -9,10 +9,10 @@ class IncrCodeSearchController < ApplicationController
 
 
   def search
-
     @project = Project.find(params[:project_id])
     @scm_supported = scm_supported(@project)
     return unless @scm_supported
+    @project.repository.fetch_changesets if not @project.repository.nil? and Setting.autofetch_changesets?
     @keyword = params[:keyword] || request.raw_post.split('&')[0]
   end
 
