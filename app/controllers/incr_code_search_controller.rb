@@ -7,6 +7,7 @@ class IncrCodeSearchController < ApplicationController
     Redmine::Scm::Adapters::MercurialAdapter
   ]
 
+  SEPARATOR = ': '
 
   def search
     @project = Project.find(params[:project_id])
@@ -23,15 +24,17 @@ class IncrCodeSearchController < ApplicationController
       return
     end
     @files = []
-    open("| #{cmd}") do |io|
-      io.each_line {|line| @files << line.chomp }     
+    @project.repositories.each do |repository|
+      open("| #{cmd repository}") do |io|
+        io.each_line {|line| @files << repository.name + SEPARATOR + line.chomp }     
+      end
     end
     render :json => @files
   end
 
   private 
-  def cmd
-    case @project.repository.scm
+  def cmd(repository)
+    case repository.scm
     when Redmine::Scm::Adapters::GitAdapter
       "git --git-dir #{@project.repository.url}  ls-tree -r --name-only HEAD:"
     when Redmine::Scm::Adapters::SubversionAdapter
