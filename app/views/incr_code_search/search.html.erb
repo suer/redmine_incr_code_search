@@ -1,7 +1,7 @@
 <% unless @scm_supported %>
   <p> unsupported repository </p>
 <% else %>
-  <% form_tag :action => 'search', :project_id => @project do %>
+  <%= form_tag :action => 'search', :project_id => @project do %>
     <%= text_field_tag :keyword, @keyword, {:autofocus=>true, :style=>'width: 300px'} %>
   <% end %>
 <div id="result"/>
@@ -28,7 +28,7 @@ function listFiles() {
 
 Event.observe(window, "load", function() { 
   new Ajax.Request(
-    '<%= home_url %>incr_code_search/<%= params[:project_id] %>/files.json',
+    '<%= home_url %>incr_code_search/files.json?project_id=<%= params[:project_id] %>',
     {
       method: 'get',
       parameters: "keyword=" + $('keyword').value,
