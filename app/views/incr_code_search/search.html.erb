@@ -13,11 +13,14 @@ var files = null;
 function listFiles() {
   var regexp = new RegExp($('keyword').value, 'ig');
   var html = '';
-  for (var i = 0, len = files.length; i < len; i++) {
-    if (files[i].match(regexp)) {
-      url = "<%= url_for(:controller => 'repositories', :action => 'entry', :id => @project) %>/" +  files[i];
-      highlightedText = files[i].replace(regexp, "<span style='color: red; background-color: yellow;'>$&</span>");
-      html += "<p><a href='" + url + "'>" + highlightedText + "</a></p>";
+  for (var repository_name in files) {
+    for (var i = 0, len = files[repository_name].length; i < len; i++) {
+      var file = files[repository_name][i];
+      if (file.match(regexp)) {
+        url = "<%= url_for(:controller => 'repositories', :action => 'entry', :id => @project) %>/" + file + "?repository_id=" + repository_name ;
+        highlightedText = file.replace(regexp, "<span style='color: red; background-color: yellow;'>$&</span>");
+        html += "<p><a href='" + url + "'>" + repository_name + ":" + highlightedText + "</a></p>";
+      }
     }
   }
   $('result').update(html);
@@ -29,7 +32,7 @@ Event.observe(window, "load", function() {
     {
       method: 'get',
       parameters: "keyword=" + $('keyword').value,
-      onComplete: function(req, json) { files = eval(req.responseText); listFiles()}
+      onComplete: function(req, json) { files = eval("(" + req.responseText + ")"); listFiles()}
     });
 });
 new Form.Element.Observer('keyword', 0.5, listFiles);

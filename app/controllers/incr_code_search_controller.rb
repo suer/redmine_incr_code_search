@@ -13,7 +13,6 @@ class IncrCodeSearchController < ApplicationController
     @project = Project.find(params[:project_id])
     @scm_supported = scm_supported(@project)
     return unless @scm_supported
-    @project.repository.fetch_changesets if not @project.repository.nil? and Setting.autofetch_changesets?
     @keyword = params[:keyword] || request.raw_post.split('&')[0]
   end
 
@@ -23,10 +22,14 @@ class IncrCodeSearchController < ApplicationController
       render :json => '[]'
       return
     end
-    @files = []
+    @files = {} 
+      puts "============"
     @project.repositories.each do |repository|
       open("| #{cmd repository}") do |io|
-        io.each_line {|line| @files << repository.name + SEPARATOR + line.chomp }     
+        io.each_line do |line|
+          @files[repository.name] = [] unless @files[repository.name]
+          @files[repository.name] <<  line.chomp
+        end
       end
     end
     render :json => @files
@@ -36,11 +39,11 @@ class IncrCodeSearchController < ApplicationController
   def cmd(repository)
     case repository.scm
     when Redmine::Scm::Adapters::GitAdapter
-      "git --git-dir #{@project.repository.url}  ls-tree -r --name-only HEAD:"
+      "git --git-dir #{repository.url}  ls-tree -r --name-only HEAD:"
     when Redmine::Scm::Adapters::SubversionAdapter
-      "svn ls -R #{@project.repository.url}"
+      "svn ls -R #{repository.url}"
     when Redmine::Scm::Adapters::MercurialAdapter
-      "hg locate -R #{@project.repository.url}"
+      "hg locate -R #{repository.url}"
     end
   end
   
