@@ -23,12 +23,12 @@ class IncrCodeSearchController < ApplicationController
       return
     end
     @files = {} 
-      puts "============"
     @project.repositories.each do |repository|
+      repository_name = repository.identifier || ''
       open("| #{cmd repository}") do |io|
         io.each_line do |line|
-          @files[repository.name] = [] unless @files[repository.name]
-          @files[repository.name] <<  line.chomp
+          @files[repository_name] = [] unless @files[repository_name]
+          @files[repository_name] <<  line.chomp
         end
       end
     end
