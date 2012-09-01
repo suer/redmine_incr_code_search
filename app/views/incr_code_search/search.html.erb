@@ -11,7 +11,7 @@
 
 var files = null;
 function listFiles() {
-  var regexp = new RegExp($('keyword').value, 'ig');
+  var regexp = new RegExp($('#keyword').val(), 'ig');
   var html = '';
   for (var repository_name in files) {
     for (var i = 0, len = files[repository_name].length; i < len; i++) {
@@ -23,19 +23,18 @@ function listFiles() {
       }
     }
   }
-  $('result').update(html);
+  $('#result').html(html);
 }
 
-Event.observe(window, "load", function() { 
-  new Ajax.Request(
-    '<%= home_url %>incr_code_search/files.json?project_id=<%= params[:project_id] %>',
-    {
-      method: 'get',
-      parameters: "keyword=" + $('keyword').value,
-      onComplete: function(req, json) { files = eval("(" + req.responseText + ")"); listFiles()}
-    });
+$(document).ready(function() {
+  $.ajax({
+    type: 'GET',
+    url: '<%= home_url %>incr_code_search/files.json',
+    data: "project_id=<%= params[:project_id] %>&keyword=" + $('#keyword').val(),
+    success: function(json) { files = json; listFiles()}
+  });
 });
-new Form.Element.Observer('keyword', 0.5, listFiles);
+$('#keyword').keyup(function(e) { listFiles(); });
 
 })(document);
 </script>  
