@@ -2,7 +2,7 @@ require 'redmine'
 
 Redmine::Plugin.register :redmine_incr_code_search do
   name 'Redmine Incr Code Search plugin'
-  author 'suer & mallowlabs in codefirst.org'
+  author 'suer'
   description 'Incremental Code Search plugin'
   version '0.0.4'
   url 'https://github.com/suer/redmine_incr_code_search'
