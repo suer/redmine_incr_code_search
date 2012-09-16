@@ -10,7 +10,7 @@ Authors
 Requirements
 ----------------------------
 
-* Redmine 1.1
+* Redmine 2.1
 
 Repository
 ----------------------------

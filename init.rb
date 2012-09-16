@@ -4,7 +4,7 @@ Redmine::Plugin.register :redmine_incr_code_search do
   name 'Redmine Incr Code Search plugin'
   author 'suer'
   description 'Incremental Code Search plugin'
-  version '0.0.4'
+  version '0.0.5'
   url 'https://github.com/suer/redmine_incr_code_search'
   author_url 'http://d.hatena.ne.jp/suer'
 
