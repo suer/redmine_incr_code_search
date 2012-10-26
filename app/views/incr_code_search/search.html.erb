@@ -6,7 +6,7 @@
   <% end %>
 <div id="result"/>
 
-<script type="text/javascript">
+<%= javascript_tag do %>
 (function(document) {
 
 var files = null;
@@ -29,7 +29,7 @@ function listFiles() {
 $(document).ready(function() {
   $.ajax({
     type: 'GET',
-    url: '<%= home_url %>incr_code_search/files.json',
+    url: '<%= home_url %>incr_code_search/files.js',
     data: "project_id=<%= params[:project_id] %>&keyword=" + $('#keyword').val(),
     success: function(json) { files = json; listFiles()}
   });
@@ -37,6 +37,6 @@ $(document).ready(function() {
 $('#keyword').keyup(function(e) { listFiles(); });
 
 })(document);
-</script>  
+<% end %>
 
 <% end %>
