@@ -1,18 +1,19 @@
 <% unless @scm_supported %>
   <p> unsupported repository </p>
 <% else %>
-  <%= form_tag :action => 'search', :project_id => @project do %>
     <%= text_field_tag :keyword, @keyword, {:autofocus=>true, :style=>'width: 300px'} %>
-  <% end %>
 <div id="result"/>
 
 <%= javascript_tag do %>
 (function(document) {
 
 var files = null;
+var current = null;
+var keyword = ""
 function listFiles() {
+  current = null;
   var regexp = new RegExp($('#keyword').val(), 'ig');
-  var html = '';
+  var html = '<div class="filelist">';
   for (var repository_name in files) {
     for (var i = 0, len = files[repository_name].length; i < len; i++) {
       var file = files[repository_name][i];
@@ -23,7 +24,9 @@ function listFiles() {
       }
     }
   }
+  html += "</div>"
   $('#result').html(html);
+  next();
 }
 
 $(document).ready(function() {
@@ -31,10 +34,76 @@ $(document).ready(function() {
     type: 'GET',
     url: '<%= home_url %>incr_code_search/files.js',
     data: "project_id=<%= params[:project_id] %>&keyword=" + $('#keyword').val(),
-    success: function(json) { files = json; listFiles()}
+    success: function(json) {
+      files = json;
+      listFiles();
+    }
   });
 });
-$('#keyword').keyup(function(e) { listFiles(); });
+
+$('#keyword').keyup(function(e) {
+  if (keyword != $('#keyword').val()) {
+    listFiles();
+  }
+  keyword = $('#keyword').val();
+});
+
+function selectCurrent() {
+  current.children().first().css("background-color", "#ddd");
+}
+
+function clearSelectCurrent() {
+  current.children().first().css("background-color", "");
+}
+
+function previous() {
+  if (current == null) {
+    current = $(".filelist p").first();
+  } else {
+    var element = current.prev();
+    if (element.length > 0) {
+      clearSelectCurrent();
+      current = element;
+    }
+  }
+  selectCurrent();
+}
+
+function next() {
+  if (current == null) {
+    current = $(".filelist p").first();
+  } else {
+    var element = current.next();
+    if (element.length > 0) {
+      clearSelectCurrent();
+      current = element;
+    }
+  }
+  selectCurrent();
+}
+
+function visitCurrent() {
+  var url = current.children().first().attr("href");
+  location.href = url;
+}
+
+$(document).keydown(function(e) {
+  switch(e.keyCode) {
+  case 80: // p
+    if (event.ctrlKey) {
+       previous();
+    }
+    break;
+  case 78: // n
+    if (event.ctrlKey) {
+      next();
+    }
+    break;
+  case 13: // enter
+    visitCurrent();
+    break;
+  }
+});
 
 })(document);
 <% end %>
