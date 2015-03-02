@@ -89,15 +89,11 @@ function visitCurrent() {
 
 $(document).keydown(function(e) {
   switch(e.keyCode) {
-  case 80: // p
-    if (event.ctrlKey) {
-       previous();
-    }
+  case 40: // down
+    next();
     break;
-  case 78: // n
-    if (event.ctrlKey) {
-      next();
-    }
+  case 38: // up
+    previous();
     break;
   case 13: // enter
     visitCurrent();
