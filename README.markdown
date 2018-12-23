@@ -12,7 +12,7 @@ Authors
 Requirements
 ----------------------------
 
-* Redmine 2.1 or later
+* Redmine 4.0 or later
 
 Repository
 ----------------------------
