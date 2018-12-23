@@ -17,9 +17,10 @@ function listFiles() {
   for (var repository_name in files) {
     for (var i = 0, len = files[repository_name].length; i < len; i++) {
       var file = files[repository_name][i];
-      if (file.match(regexp)) {
-        url = "<%= url_for(:controller => 'repositories', :action => 'entry', :id => @project) %>/" + file + "?repository_id=" + repository_name ;
-        highlightedText = file.replace(regexp, "<span style='color: red; background-color: yellow;'>$&</span>");
+      var path = file['path'];
+      if (path.match(regexp)) {
+        var url = file['url'];
+        var highlightedText = path.replace(regexp, "<span style='color: red; background-color: yellow;'>$&</span>");
         html += "<p><a href='" + url + "'>" + repository_name + ":" + highlightedText + "</a></p>";
       }
     }

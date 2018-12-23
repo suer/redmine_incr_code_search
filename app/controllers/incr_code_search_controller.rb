@@ -25,10 +25,11 @@ class IncrCodeSearchController < ApplicationController
     @files = {} 
     @project.repositories.each do |repository|
       repository_name = repository.identifier || ''
+      base_url = url_for(:controller => 'repositories', :action => 'entry', :id => @project, :repository_id => repository)
       open("| #{cmd repository}") do |io|
         io.each_line do |line|
           @files[repository_name] = [] unless @files[repository_name]
-          @files[repository_name] <<  line.chomp
+          @files[repository_name] <<  {:url => base_url + '/' + line.chomp, :path => line.chomp}
         end
       end
     end
